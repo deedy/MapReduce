@@ -1,30 +1,45 @@
-type ('a, 'b) t' = Empty | Cell of 'a * 'b
-  and ('a, 'b) t = (('a, 'b) t') array * ('a -> int)
+type ('a, 'b) t = (('a * 'b) list) array * ('a -> int) * int ref
 
 exception Not_found
 
 let create (capacity : int) (hash : 'a -> int) : ('a, 'b) t = 
-  Array.make capacity Empty, hash
+  (Array.make capacity [], hash, ref 0)
 
-let add ((table, hash) : ('a, 'b) t) (key : 'a) (value : 'b) : unit =
-  Array.set table (hash key) (Cell (key,value))
+let add ((arr,hash,len) : ('a, 'b) t) (key : 'a) (value : 'b) : unit =
+  Array.set arr (hash key) ((key,value)::(Array.get arr (hash key)));
+  len := !len + 1
 
-let find ((table, hash) : ('a, 'b) t) (key : 'a) : 'b = 
-  match Array.get table (hash key) with 
-  | Empty -> raise Not_found 
-  | Cell (k,v) -> v
+let find ((arr,hash,len) : ('a, 'b) t) (key : 'a) : 'b = 
+  match Array.get arr (hash key) with 
+  | [] -> raise Not_found 
+  | lst -> let helper a (k,v) = if k=key then Some v else a in
+      let value = List.fold_left helper None lst in
+      begin match value with
+      | None -> raise Not_found
+      | Some v -> v end
 
-let mem ((table, hash) : ('a, 'b) t) (key : 'a) : bool = 
-  match Array.get table (hash key) with Empty -> false | _ -> true
+let mem ((arr,hash,len) : ('a, 'b) t) (key : 'a) : bool = 
+  match Array.get arr (hash key) with 
+  | [] -> false 
+  | lst -> List.fold_left (fun a (k,v) -> k=key || a) false lst
 
-let remove ((table, hash) : ('a, 'b) t) (key : 'a) : unit =
-  Array.set table (hash key) Empty
+let remove ((arr,hash,len) : ('a, 'b) t) (key : 'a) : unit =
+  match Array.get arr (hash key) with
+  | [] -> ()
+  | lst -> let helper a (k,v) = if k=key then a else (k,v)::a in
+      let new_lst = List.fold_left helper [] (List.rev lst) in
+      Array.set arr (hash key) new_lst
 
-let iter (f : 'a -> 'b -> unit) ((table, hash) : ('a, 'b) t) : unit = 
-  Array.iter (fun x -> match x with Empty -> () | Cell (k,v) -> f k v) table
+let iter (f : 'a -> 'b -> unit) ((arr,hash,len) : ('a, 'b) t) : unit = 
+  let helper x = match x with
+    | [] -> ()
+    | lst -> List.iter (fun (k,v) -> f k v) lst in
+  Array.iter helper arr
 
-let fold (f : 'a -> 'b -> 'c -> 'c) ((table, hash) : ('a, 'b) t) (init : 'c) : 'c =
-  Array.fold_left 
-    (fun x c -> match x with Empty -> c | Cell (k,v) -> f k v c) init table
+let fold (f : 'a->'b->'c->'c) ((arr,h,l) : ('a, 'b) t) (init : 'c) : 'c =
+  let helper acc x = match x with
+    | [] -> acc
+    | lst -> List.fold_left (fun c (k,v) -> f k v c) acc lst in
+  Array.fold_left helper init arr
 
-let length ((table, hash) : ('a, 'b) t) : int = Array.length table
+let length ((arr,hash,len) : ('a, 'b) t) : int = !len
