@@ -6,11 +6,12 @@ let create (capacity : int) (hash : 'a -> int) : ('a, 'b) t =
   (Array.make capacity [], hash, ref 0)
 
 let add ((arr,hash,len) : ('a, 'b) t) (key : 'a) (value : 'b) : unit =
-  Array.set arr (hash key) ((key,value)::(Array.get arr (hash key)));
+  let s = Array.length arr in
+  Array.set arr ((hash key) mod s) ((key,value)::(Array.get arr (hash key)));
   len := !len + 1
 
 let find ((arr,hash,len) : ('a, 'b) t) (key : 'a) : 'b = 
-  match Array.get arr (hash key) with 
+  match Array.get arr ((hash key) mod (Array.length arr)) with 
   | [] -> raise Not_found 
   | lst -> let helper a (k,v) = if k=key then Some v else a in
       let value = List.fold_left helper None lst in
@@ -19,16 +20,16 @@ let find ((arr,hash,len) : ('a, 'b) t) (key : 'a) : 'b =
       | Some v -> v end
 
 let mem ((arr,hash,len) : ('a, 'b) t) (key : 'a) : bool = 
-  match Array.get arr (hash key) with 
+  match Array.get arr ((hash key) mod (Array.length arr)) with 
   | [] -> false 
   | lst -> List.fold_left (fun a (k,v) -> k=key || a) false lst
 
 let remove ((arr,hash,len) : ('a, 'b) t) (key : 'a) : unit =
-  match Array.get arr (hash key) with
+  match Array.get arr ((hash key) mod (Array.length arr)) with
   | [] -> ()
   | lst -> let helper a (k,v) = if k=key then a else (k,v)::a in
       let new_lst = List.fold_left helper [] (List.rev lst) in
-      Array.set arr (hash key) new_lst
+      Array.set arr ((hash key) mod (Array.length arr)) new_lst
 
 let iter (f : 'a -> 'b -> unit) ((arr,hash,len) : ('a, 'b) t) : unit = 
   let helper x = match x with
