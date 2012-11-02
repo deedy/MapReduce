@@ -20,7 +20,7 @@ let add ((arr,hash,len) : ('a, 'b) t) (key : 'a) (value : 'b) : unit =
     (iter helper (arr,hash,len); arr := new_arr)
   else ();
   let i = (hash key) mod (Array.length !arr) in 
-  let helper acc (k,v) = if k=key then acc else (k,v)::acc in
+  let helper acc (k,v) = if k=key then (len := !len - 1; acc) else (k,v)::acc in
   let lst = List.rev (Array.get !arr i) in
   let new_lst = List.fold_left helper [] lst in
   Array.set !arr i ((key,value)::new_lst);
