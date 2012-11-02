@@ -3,8 +3,43 @@ open Worker_manager
 
 (* TODO implement these *)
 let map kv_pairs shared_data map_filename : (string * string) list = 
-  let q = initialize_mappers map_filename shared_data in
-  let tp = Thread_pool.create 50 in
+  let manager = Worker_manager.initialize_mappers map_filename shared_data in
+  let thread_pool = Thread_pool.create 100 in
+  let work_map = Hashtable.create (List.length kv_pairs) Hashtbl.hash in
+  let _ = List.fold_left (fun acc ele -> Hashtable.add work_map acc ele;
+    (acc+1)) 0 kv_pairs in
+  let results_list = [] in
+  let results_lock = Mutex.create() in
+  let work_lock = Mutex.create() in
+  let map_function (id,(key,value)) () =
+    let worker = Worker_manager.pop_worker manager in
+      match (Worker_manager.map worker key value) with
+      | Some (res) ->
+          if (Hashtable.mem work_map id) then 
+            let _ = Mutex.lock work_lock in
+            let _ = Hashtable.remove work_map id in
+            let _ = Mutex.unlock work_lock in
+            let _ = Mutex.lock results_lock in
+            let results_list = res::results_list in 
+            let _ = Mutex.unlock results_lock in
+            Worker_manager.push_worker manager worker
+          else ()
+      | None -> () (* Failed workers not pushed back onto queue *) 
+    in
+  let rec continualAdder work_map : (string * string) list = 
+    if Hashtable.length work_map = 0 then
+      let _ = Thread_pool.destroy thread_pool in
+      let _ = Worker_manager.clean_up_workers manager in
+      let _  = Mutex.lock results_lock in
+      let results_list = List.flatten results_list in
+      let _  = Mutex.unlock results_lock in 
+      results_list
+    else
+      let _ = Hashtable.iter (fun id kv -> Thread_pool.add_work (map_function (id,kv)) thread_pool) work_map in
+      let _  = Thread.delay 0.1 in 
+      continualAdder work_map in
+  continualAdder work_map
+  
   let f () = failwith "" 
 
 let combine kv_pairs : (string * string list) list = 
@@ -16,12 +51,46 @@ let combine kv_pairs : (string * string list) list =
   let lst = ref [] in
   Hashtable.iter (fun k v -> lst := (k,v)::(!lst)) new_t; !lst
 
+
+
 let reduce kvs_pairs shared_data reduce_filename : (string * string list) list =
-  let q = initialize_reducers reduce_filename shared_data in
-  let helper acc (k,vs) = match reduce (pop_worker q) k vs with
-    | None -> failwith "Implement fault tolerance"
-    | Some lst -> (k,lst)::acc in
-  List.fold_left helper [] kvs_pairs
+  let manager = Worker_manager.initialize_reducers reduce_filename shared_data in
+  let thread_pool = Thread_pool.create 100 in
+  let work_map = Hashtable.create (List.length kvs_pairs) Hashtbl.hash in
+  let _ = List.fold_left (fun acc ele -> Hashtable.add work_map acc ele;
+    (acc+1)) 0 kvs_pairs in 
+  let results_list = [] in
+  let results_lock = Mutex.create() in
+  let work_lock = Mutex.create() in
+
+  let reduce_function (id,(key,value)) () =
+    let worker = Worker_manager.pop_worker manager in
+      match (Worker_manager.reduce worker key value) with
+      | Some (res) ->
+          if (Hashtable.mem work_map id) then 
+            let _ = Mutex.lock work_lock in
+            let _ = Hashtable.remove work_map id in
+            let _ = Mutex.unlock work_lock in
+            let _ = Mutex.lock results_lock in
+            let results_list = res::results_list in 
+            let _ = Mutex.unlock results_lock in
+            Worker_manager.push_worker manager worker
+          else ()
+      | None -> () (* Failed workers not pushed back onto queue *)
+      in
+  let rec continualAdder work_map : (string * string list) list = 
+    if Hashtable.length work_map = 0 then
+      let _ = Thread_pool.destroy thread_pool in
+      let _ = Worker_manager.clean_up_workers manager in
+      let _  = Mutex.lock results_lock in
+      let results_list = List.flatten results_list in
+      let _  = Mutex.unlock results_lock in 
+      results_list
+    else
+      let _ = Hashtable.iter (fun id kv -> Thread_pool.add_work (reduce_function (id,kv)) thread_pool) work_map in
+      let _  = Thread.delay 0.1 in 
+      continualAdder work_map in
+  continualAdder work_map
 
 let map_reduce (app_name : string) (mapper : string) 
     (reducer : string) (filename : string) =
