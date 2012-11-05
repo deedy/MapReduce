@@ -93,7 +93,20 @@ let run id input_data =
   try
     if not !dynlink_init then
       begin
-        let ocaml_lib = if Sys.os_type = "Win32" then Sys.getenv "OCAMLLIB" else ocaml_lib_dir in
+        let ocaml_lib =
+          if Sys.os_type = "Win32" then Sys.getenv "OCAMLLIB"
+          else if Sys.os_type = "Unix" then
+            if Sys.is_directory "/usr/lib/ocaml/" then
+              "/usr/lib/ocaml"
+            else if Sys.is_directory "/usr/local/lib/ocaml/" then
+              "/usr/local/lib/ocaml"
+            else
+              raise (Failure "OCaml lib path not found. Please find and change this file manually")
+          else if Sys.os_type = "Cygwin" then
+            Sys.getenv "OCAMLLIB" (* NOTE: IF this fails, change to /usr/lib/ocaml *)
+          else
+            raise (Failure "Error (program.ml/run): OS not supported. If you have this case, contact the TAs with your specific issue")
+        in
         let extras = if Sys.os_type = "Win32" then Str.split (Str.regexp ";") (Sys.getenv "PATH") else [] in
         Dynlink.add_interfaces
           ["Pervasives"; "Util"; "Program"; "Thread"]
