@@ -1,3 +1,6 @@
-let (key, value) = Program.get_input() in
-Program.set_output (List.fold_left (fun acc k -> (k, "1")::acc) []
-                   (List.map String.lowercase (Util.split_words value)))
+try
+	let (key,values) = Program.get_input() in 
+let output = List.fold_left (fun acc ele -> acc+. (Util.unmarshal ele)) 
+  0. values in
+ Program.set_output ([Util.marshal output])
+with exn -> raise exn

@@ -17,6 +17,7 @@ val next_level : int -> int
 
 val print_kvs : (string * string list) list -> unit
 val print_map_results : (string * string) list -> unit
+val print_page_ranks : ((int * float) list) -> unit
 val print_combine_results : (string * string list) list -> unit
 val print_reduce_results : (string * string list) list -> unit
 val read_whole_file : string -> string

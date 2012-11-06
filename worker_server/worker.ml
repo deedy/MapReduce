@@ -20,7 +20,7 @@ let rec handle_request client =
         | InitMapper (source, shared_data) -> 
             let result = Program.build source in
             begin match result with
-            | (Some id, s) -> Hashtable.add mappers id s
+            | (Some id, s) -> Hashtable.add mappers id s; Program.write_shared_data id shared_data;
             | _ -> () end;
             if send_response client result then handle_request client 
             else failwith "Connection closed"
