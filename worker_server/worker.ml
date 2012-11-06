@@ -18,18 +18,19 @@ let rec handle_request client =
       begin
         match v with
         | InitMapper (source, shared_data) -> 
-            let result = Program.build source in
-            begin match result with
-            | (Some id, s) -> Hashtable.add mappers id s; Program.write_shared_data id shared_data;
-            | _ -> () end;
-            if send_response client result then handle_request client 
-            else failwith "Connection closed"
+            begin match Program.build source with
+            | (Some id, s) -> if send_response client (Mapper (Some id, s)) then
+                (Hashtable.add mappers id s; 
+                 Program.write_shared_data id shared_data;
+                 handle_request client)
+            | (None, s) -> if send_response client (Mapper (None, s)) then
+                handle_request client end;
         | InitReducer source ->
-            let result = Program.build source in
-            begin match result with
-            | (Some id, s) -> Hashtable.add reducers id s;
-                if send_response client (Reducer (Some id, s)) then handle_request client
-            | _ -> () end 
+            begin match Program.build source with
+            | (Some id, s) -> if send_response client (Reducer (Some id, s)) then 
+                (Hashtable.add reducers id s; handle_request client)
+            | (None, s) -> if send_response client (Reducer (None, s)) then
+                handle_request client end;
         | MapRequest (id, k, v) -> 
             if Hashtable.mem mappers id then 
               begin match Program.run id (k,v) with
@@ -50,3 +51,4 @@ let rec handle_request client =
   | None ->
       Connection.close client;
       print_endline "Connection lost while waiting for request."
+
