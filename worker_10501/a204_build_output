@@ -1,0 +1,3 @@
+File "worker_10501/a204.ml", line 26, characters 43-46:
+Error: This expression has type float * float
+       but an expression was expected of type float

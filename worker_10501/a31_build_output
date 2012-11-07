@@ -1,0 +1,4 @@
+File "worker_10501/a31.ml", line 15, characters 5-17:
+Warning 26: unused variable bodies_array.
+File "worker_10501/a31.ml", line 17, characters 4-5:
+Warning 26: unused variable k.

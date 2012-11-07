@@ -13,8 +13,8 @@ let marshal_pairs (kv_pairs: (int*float) list) : (string*string) list =
          (marshal id, marshal rank)::acc) [] kv_pairs)
 
 let unmarshal_pairs (kvs_pairs: (string*string list) list) : (int*float) list = 
-  List.rev (List.fold_left (fun acc (id,rank_list) -> 
-  	     (unmarshal id, unmarshal (List.hd(rank_list)))::acc) [] kvs_pairs)
+	  List.rev (List.fold_left (fun acc (id,rank_list) -> 
+	  	     (unmarshal id, unmarshal (List.hd(rank_list)))::acc) [] kvs_pairs)
 
 let main (args : string array) : unit = 
   if Array.length args <= 3 then

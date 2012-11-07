@@ -39,12 +39,15 @@ let map kv_pairs shared_data map_filename : (string * string) list =
  (*     let _ = print_map_results results in*)
       results
     else
+      let _ = print_int  (Hashtable.length work_map) in
+      let _ = print_endline ("") in
       let _ = Mutex.lock work_lock in
       let _ = Hashtable.iter (fun id kv -> Thread_pool.add_work (map_function (id,kv)) thread_pool) work_map in
       let _ = Mutex.unlock work_lock in 
 	    let _  = Thread.delay 0.1 in 
       continualAdder work_map in
-  continualAdder work_map
+
+    continualAdder work_map
   
 let combine kv_pairs : (string * string list) list = 
   let t = Hashtable.create (List.length kv_pairs) Hashtbl.hash in
