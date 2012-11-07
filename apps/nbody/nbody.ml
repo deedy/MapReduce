@@ -1,7 +1,7 @@
 open Util
 
 let map_reduce (app_name : string) (mapper : string) 
-    (reducer : string) (kv_pairs: (string*string) list) (shared_data: string)=
+    (reducer : string) (kv_pairs: (string * string) list) (shared_data: string)=
   let app_dir = Printf.sprintf "apps/%s/" app_name in
   let mapped = Map_reduce.map kv_pairs shared_data (app_dir ^ mapper ^ ".ml") in
   let combined = Map_reduce.combine mapped in
@@ -9,7 +9,7 @@ let map_reduce (app_name : string) (mapper : string)
   reduced
 
 
-let get_graph_array_from_bodies (bodies : (string*body) list) : body array = 
+let get_graph_array_from_bodies (bodies : (string * body) list) : body array = 
   let max_id = List.fold_left (fun acc (id,_) -> if ((int_of_string id) > acc) then 
     (int_of_string id) else acc) (-1) bodies in
   let bodies_array = Array.make (max_id+1) (-1.,(-1.,-1.),(-1.,-1.)) in
@@ -21,7 +21,7 @@ let get_kv_pairs_from_bodies (bodies: (string*body) list ) : (string*string) lis
   List.rev (List.fold_left (fun acc (id,_) -> (id,"")::acc) [] bodies)
 
 
-let get_bodies_from_results (results: (string*string list) list) (bodies_array: body array) : (string*body) list =
+let get_bodies_from_results (results: (string * string list) list) (bodies_array: body array) : (string * body) list =
     let foo acc (id,accel_list) = let iden = int_of_string id in 
       let (mass,(posx,posy),(velx,vely)) = Array.get bodies_array iden in
       let (accx,accy) = unmarshal (List.hd(accel_list)) in
@@ -42,7 +42,7 @@ let get_bodies_from_results (results: (string*string list) list) (bodies_array: 
 
     List.rev (List.fold_left foo [] results)
 
-let new_graph_array (bodies : (string*body) list) (bodies_array: body array) : body array = 
+let new_graph_array (bodies : (string * body) list) (bodies_array: body array) : body array = 
   let _ = List.fold_left (fun acc (id,bod) -> Array.set bodies_array 
          (int_of_string id) bod; acc) 0 bodies in 
   bodies_array
