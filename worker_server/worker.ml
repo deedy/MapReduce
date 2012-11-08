@@ -4,6 +4,8 @@ let mappers = Hashtable.create 100 Hashtbl.hash
 
 let reducers = Hashtable.create 100 Hashtbl.hash
 
+let lock = Mutex.create ()
+
 let send_response client response =
   let success = Connection.output client response in
     (if not success then
@@ -20,7 +22,7 @@ let rec handle_request client =
         | InitMapper (source, shared_data) -> 
             begin match Program.build source with
             | (Some id, s) -> if send_response client (Mapper (Some id, s)) then
-                (Hashtable.add mappers id s; 
+                (Mutex.lock lock; Hashtable.add mappers id s; Mutex.unlock lock;
                  Program.write_shared_data id shared_data;
                  handle_request client)
             | (None, s) -> if send_response client (Mapper (None, s)) then
@@ -28,7 +30,9 @@ let rec handle_request client =
         | InitReducer source ->
             begin match Program.build source with
             | (Some id, s) -> if send_response client (Reducer (Some id, s)) then 
-                (Hashtable.add reducers id s; handle_request client)
+                (Mutex.lock lock;
+                 Hashtable.add reducers id s; Mutex.unlock lock;
+                 handle_request client)
             | (None, s) -> if send_response client (Reducer (None, s)) then
                 handle_request client end;
         | MapRequest (id, k, v) -> 

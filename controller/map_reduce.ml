@@ -13,6 +13,7 @@ let map kv_pairs shared_data map_filename : (string * string) list =
   let marker = ref 0 in
   let tableLock = Mutex.create () in
   let resultLock = Mutex.create () in
+  (* Unit-to-unit function (will be partially applied)*)
   let rec f i () = 
     Mutex.lock tableLock;
     if Hashtable.mem table i then begin
@@ -21,8 +22,9 @@ let map kv_pairs shared_data map_filename : (string * string) list =
       if !c > 5 then failwith "A job has failed" else
       let worker = pop_worker manager in
       match map worker k v with
-      | None -> c := !c + 1
+      | None -> c := !c + 1 (* Increments number of times failed *)
       | Some lst -> begin
+          (* Inserts results into resultsLst if not already done *)
           Mutex.lock tableLock;
           if Hashtable.mem table i then begin
             Hashtable.remove table i; 
@@ -31,6 +33,7 @@ let map kv_pairs shared_data map_filename : (string * string) list =
             resultLst := lst::(!resultLst);
             Mutex.unlock resultLock end
           else Mutex.unlock tableLock; 
+          (* Looks through the table for unfinished work and adds it to pool *)
           Mutex.lock tableLock;
           if Hashtable.length table > 0 then begin
             while Hashtable.mem table !marker = false do
@@ -68,6 +71,7 @@ let reduce kvs_pairs shared_data reduce_filename : (string * string list) list =
   let marker = ref 0 in
   let tableLock = Mutex.create () in
   let resultLock = Mutex.create () in
+  (* Unit-to-unit function (will be partially applied)*)
   let rec f i () = 
     Mutex.lock tableLock;
     if Hashtable.mem table i then begin
@@ -76,8 +80,9 @@ let reduce kvs_pairs shared_data reduce_filename : (string * string list) list =
       if !c > 5 then failwith "A job has failed" else
       let worker = pop_worker manager in
       match reduce worker k vs with
-      | None -> c := !c + 1
+      | None -> c := !c + 1 (* Increments number of times failed *)
       | Some lst -> begin
+          (* Inserts results into resultsLst if not already done *)
           Mutex.lock tableLock; 
           if Hashtable.mem table i then begin
             Hashtable.remove table i; 
@@ -86,6 +91,7 @@ let reduce kvs_pairs shared_data reduce_filename : (string * string list) list =
             resultLst := (k,lst)::(!resultLst); 
             Mutex.unlock resultLock end
           else Mutex.unlock tableLock; 
+          (* Looks through the table for unfinished work and adds it to pool*)
           Mutex.lock tableLock;
           if Hashtable.length table > 0 then begin
             while Hashtable.mem table !marker = false do

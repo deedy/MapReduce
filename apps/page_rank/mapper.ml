@@ -1,4 +1,3 @@
-
 let graph = Util.unmarshal (Program.get_shared_data()) in
 let (key_m,value_m) = Program.get_input() in
 let value = Util.unmarshal value_m in
