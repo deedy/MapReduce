@@ -83,7 +83,7 @@ let swarm =
     | (false, false) -> (m,(x,y),(0.,v))
     | (false, true)  -> (m,(x,y),(v,0.)) in
   let rec bodies n acc = 
-    if n < 0 then acc
+    if n = 0 then acc
     else bodies (n-1) ((string_of_int n, (b_cw(pos mass)(r_vel())))::acc) in
   ("300",  bodies 300 [])
 
@@ -166,5 +166,77 @@ let terrible_situation =
     else bodies (n-1) ((string_of_int n, (mass n, pos n, speed n))::acc) in
   ("3", bodies 2 [])
 
+(* Solar System Gone Berzerk *)
 let zardoz = 
-  ("Farewell, land of my birth. Never again will these eyes gaze upon your beauty.", [])
+  let bigM = mass *. 2. in
+  let earthM = mass in
+  let pi = 4.0 *. atan 1.0 in 
+  let noobj = 20 in
+  let mass = function
+  | _ -> earthM in
+  let pos = function
+  | x -> ((50.*.(cos (2.*.pi*.(float_of_int x)/.(float_of_int noobj)))),
+    (50.*.(sin (2.*.pi*.(float_of_int x)/.(float_of_int noobj))))) 
+  | _ -> (0.,0.) in
+  let speed = function
+  | x -> ((0.*.(cos (2.*.pi*.(float_of_int x)/.(float_of_int noobj)))),
+    (0.*.(sin (2.*.pi*.(float_of_int x)/.(float_of_int noobj)))))
+  | _ -> (0.,0.) in
+  let rec bodies n acc = 
+    if n < 0 then acc
+    else bodies (n-1) ((string_of_int n, (mass n, pos n, speed n))::acc) in
+  ((string_of_int (noobj)), bodies (noobj-1) [])
+
+(* (* Acceleration without Collision *)
+let zardoz = 
+  let bigM = mass *. 2. in
+  let earthM = mass in
+  let mass = function
+  | 0 -> bigM
+  | _ -> earthM in
+  let pos = function
+  | 0 -> (0.,0.)
+  | x -> (10.*.(float_of_int x),0.) in
+  let speed = function
+  | 0 -> (0.,0.)
+  | x -> (0.,sqrt((6.67 *. (10.**(-11.)) *. bigM)/.(10.*.(float_of_int x)))) in
+  let rec bodies n acc = 
+    if n < 0 then acc
+    else bodies (n-1) ((string_of_int n, (mass n, pos n, speed n))::acc) in
+  ("15", bodies 14 []) *)
+
+(* (* Solar System Gone Berzerk *)
+let zardoz = 
+  let bigM = mass *. 500. in
+  let earthM = mass in
+  let mass = function
+  | 0 -> bigM
+  | _ -> earthM in
+  let pos = function
+  | 0 -> (0.,0.)
+  | x -> (10.*.(float_of_int x),0.) in
+  let speed = function
+  | 0 -> (0.,0.)
+  | x -> (0.,sqrt((6.67 *. (10.**(-11.)) *. bigM)/.(10.*.(float_of_int x)))) in
+  let rec bodies n acc = 
+    if n < 0 then acc
+    else bodies (n-1) ((string_of_int n, (mass n, pos n, speed n))::acc) in
+  ("15", bodies 14 []) *)
+
+(*   (* pseudo solar system *)
+let zardoz = 
+  let bigM = mass *. 500. in
+  let earthM = mass in
+  let mass = function
+  | 0 -> bigM
+  | _ -> earthM in
+  let pos = function
+  | 0 -> (0.,0.)
+  | x -> (50.*.(float_of_int x),0.) in
+  let speed = function
+  | 0 -> (0.,0.)
+  | x -> (0.,sqrt((6.67 *. (10.**(-11.)) *. bigM)/.(50.*.(float_of_int x)))) in
+  let rec bodies n acc = 
+    if n < 0 then acc
+    else bodies (n-1) ((string_of_int n, (mass n, pos n, speed n))::acc) in
+  ("5", bodies 4 []) *)

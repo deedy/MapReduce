@@ -1,3 +1,0 @@
-File "worker_10501/a203.ml", line 25, characters 20-34:
-Error: This expression has type float but an expression was expected of type
-         int

@@ -1,3 +1,0 @@
-File "worker_10501/a154.ml", line 22, characters 21-44:
-Error: This expression has type int but an expression was expected of type
-         bool
