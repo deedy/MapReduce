@@ -1,0 +1,125 @@
+commit 0ac1be30a771ca769895df7b603603cbfb4d7ef5
+Author: Debarghya Das <dd367@cornell.edu>
+Date:   Wed Nov 7 19:15:53 2012 -0500
+
+    NBody + Zardoz Fully Functional
+
+commit 262b78912c174b9b121f659ca54f214831604f5f
+Author: Heming Ge <hwg33@cornell.edu>
+Date:   Wed Nov 7 16:53:22 2012 -0500
+
+    Functional Map_reduce
+
+commit 255bea2839d1cea6cda7f082816dba85854e1cc5
+Author: Debarghya Das <dd367@cornell.edu>
+Date:   Wed Nov 7 16:12:33 2012 -0500
+
+    Inverted Index Mapper Reducer had disappeared
+
+commit 58d7c3e126193f7c07173476974669386ba24800
+Author: Debarghya Das <dd367@cornell.edu>
+Date:   Wed Nov 7 15:53:20 2012 -0500
+
+    NBody Partially Functional
+
+commit f9083b413698ea0d5232d5d1a437f96ed3f3ca2d
+Author: Debarghya Das <dd367@cornell.edu>
+Date:   Tue Nov 6 14:26:10 2012 -0500
+
+    Page Rank Functional
+
+commit a2f32b16a10fd57d63e7be71acba8688f4f1f7e0
+Author: Heming Ge <hwg33@cornell.edu>
+Date:   Tue Nov 6 12:21:56 2012 -0500
+
+    New Worker.ml
+
+commit d1e1ef05abb1e4470c5d95599d4401efaee42453
+Author: Debarghya Das <dd367@cornell.edu>
+Date:   Tue Nov 6 12:11:37 2012 -0500
+
+    Page Rank Functional
+
+commit 883df2cc73473dba3e9aa4f9e5f32c15cd896617
+Author: Debarghya Das <dd367@cornell.edu>
+Date:   Mon Nov 5 21:31:31 2012 -0500
+
+    MapReduce Functional
+
+commit 2d51717e887c1e3b7c23b063cf74131a3670a5eb
+Author: Heming Ge <hwg33@cornell.edu>
+Date:   Mon Nov 5 18:49:05 2012 -0500
+
+    Worker
+
+commit 7986f4ea672992ca624ce01bf282868c09015372
+Author: Debarghya Das <dd367@cornell.edu>
+Date:   Fri Nov 2 01:36:50 2012 -0400
+
+    Added Extra Files
+
+commit 1c9fef065fc3c51d20c30f176bda0d5b67c8bc89
+Author: Debarghya Das <dd367@cornell.edu>
+Date:   Fri Nov 2 01:33:19 2012 -0400
+
+    MapReduce Compiling
+
+commit cb41108152f207108f015afc4f04db733224a3c8
+Author: Heming Ge <hwg33@cornell.edu>
+Date:   Thu Nov 1 21:54:10 2012 -0400
+
+    Edited Hashtable
+
+commit 18e06ae0fba47d563b89ea04e35bedcf5dec82de
+Author: Heming Ge <hwg33@cornell.edu>
+Date:   Thu Nov 1 12:40:00 2012 -0400
+
+    Edited Hashtable
+
+commit c97c5bc1a25c2bc066a4efbbb0d432e20dc56620
+Author: Heming Ge <hwg33@cornell.edu>
+Date:   Wed Oct 31 20:14:21 2012 -0400
+
+    MapReduce skeleton
+
+commit cd7e6e6c1b7b673dee5bc83e37c8348c1b1c0b55
+Author: Heming Ge <hwg33@cornell.edu>
+Date:   Thu Oct 25 11:35:44 2012 -0400
+
+    Resizing Hashtable
+
+commit 712a03017bd8b9d4e13858a482c671163ddc0fdd
+Author: Heming Ge <hwg33@cornell.edu>
+Date:   Wed Oct 24 20:16:19 2012 -0400
+
+    Fixed Hashtable (again)
+
+commit 0eb02dcd32eec9fdbea8760d3c71351a87bff04c
+Author: Heming Ge <hwg33@cornell.edu>
+Date:   Wed Oct 24 19:59:16 2012 -0400
+
+    Fixed Hashtable
+
+commit 1540524e7708e06ab70c64fe5fc66f873443bca9
+Author: Debarghya Das <dd367@cornell.edu>
+Date:   Mon Oct 22 20:29:56 2012 -0400
+
+    Adding Files
+
+commit c8b58534642181006d927b98c574731e2a5a3db8
+Author: Debarghya Das <dd367@cornell.edu>
+Date:   Mon Oct 22 20:27:01 2012 -0400
+
+    First Real Commit
+
+commit 2a529b4d01a48a3460f3a7f448c8c0f6931544ad
+Author: Heming Ge <hwg33@cornell.edu>
+Date:   Mon Oct 22 20:25:41 2012 -0400
+
+    HW5
+
+commit d79a654c3a4a6a1b8bab2b9a78b52c13dddb2550
+Author: Debarghya Das <dd367@cornell.edu>
+Date:   Mon Oct 22 17:18:51 2012 -0700
+
+    Initial commit
